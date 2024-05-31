@@ -1,0 +1,31 @@
+-- Create the account table with the constraints
+
+CREATE TABLE accounts (
+    account_id SERIAL PRIMARY KEY,
+    first_name VARCHAR(255) NOT NULL,
+    last_name VARCHAR(255) NOT NULL,
+    email VARCHAR(255) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
+    phone_number VARCHAR(15) NOT NULL,
+    address VARCHAR(255) NOT NULL,
+    city VARCHAR(255) NOT NULL,
+    province VARCHAR(2) NOT NULL,
+    country VARCHAR(6) NOT NULL,
+    CHECK (country IN ('Canada', 'USA')),
+    CHECK (province IN (
+        'AB', 'BC', 'MB', 'NB', 'NL', 'NS', 'ON', 'PE', 'QC', 'SK',
+
+        'AL', 'AK', 'AZ', 'AR', 'CA', 'CO', 'CT', 'DE', 'FL', 'GA', 'HI', 'ID', 'IL', 'IN', 'IA', 'KS', 'KY', 'LA',
+        'ME', 'MD', 'MA', 'MI', 'MN', 'MS', 'MO', 'MT', 'NE', 'NV', 'NH', 'NJ', 'NM', 'NY', 'NC', 'ND', 'OH', 'OK',
+        'OR', 'PA', 'RI', 'SC', 'SD', 'TN', 'TX', 'UT', 'VT', 'VA', 'WA', 'WV', 'WI', 'WY'
+    ))
+);
+
+--  Insert statement
+
+INSERT INTO accounts (
+    first_name, last_name, email, password, phone_number, address, city, province, country
+) VALUES (
+    'Ryan', 'Abdi', 'ryanabdi32@gmail.com', 'password', '123-456-7890',
+    '123 Main St', 'Woodbridge', 'ON', 'Canada'
+);

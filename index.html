@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WPY Challenge</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .hidden {
+            display: none;
+        }
+        .error-box {
+            color: red;
+            margin-top: 10px;
+        }
+        .success-box {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="mb-4">Registration Form</h1>
+        <div id="errorBox" class="error-box hidden"></div>
+        <form id="registrationForm" action="/submit" method="POST">
+            <div class="form-group">
+                <label for="firstName">First Name:</label>
+                <input type="text" class="form-control" id="firstName" name="firstName" maxlength="255" required>
+            </div>
+
+            <div class="form-group">
+                <label for="lastName">Last Name:</label>
+                <input type="text" class="form-control" id="lastName" name="lastName" maxlength="255" required>
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email:</label>
+                <input type="email" class="form-control" id="email" name="email" required>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password:</label>
+                <input type="password" class="form-control" id="password" name="password" required>
+            </div>
+
+            <div class="form-group">
+                <label for="phoneNumber">Phone Number: eg: 123-456-7890</label>
+                <input type="tel" class="form-control" id="phoneNumber" name="phoneNumber" required>
+            </div>
+
+            <div class="form-group">
+                <label for="address">Address:</label>
+                <input type="text" class="form-control" id="address" name="address" maxlength="255" required>
+            </div>
+
+            <div class="form-group">
+                <label for="city">City:</label>
+                <input type="text" class="form-control" id="city" name="city" maxlength="255" required>
+            </div>
+
+            <div class="form-group">
+                <label for="country">Country:</label>
+                <select class="form-control" id="country" name="country" required onchange="showProvince()">
+                    <option value="Canada">Canada</option>
+                    <option value="USA">USA</option>
+                </select>
+            </div>
+
+            <div id="provinceField" class="form-group">
+                <label for="province">Province/State:</label>
+                <select class="form-control" id="province" name="province" required>
+                </select>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+        
+        <div id="successBox" class="success-box hidden">
+            <h2>Submission Successful</h2>
+            <div id="submittedData"></div>
+            <button class="btn btn-primary mt-4" onclick="resetForm()">Submit Another</button>
+        </div>
+    </div>
+
+    <script>
+        const provinces = {
+            Canada: [
+                { value: 'AB', text: 'Alberta' },
+                { value: 'BC', text: 'British Columbia' },
+                { value: 'MB', text: 'Manitoba' },
+                { value: 'NB', text: 'New Brunswick' },
+                { value: 'NL', text: 'Newfoundland and Labrador' },
+                { value: 'NS', text: 'Nova Scotia' },
+                { value: 'ON', text: 'Ontario' },
+                { value: 'PE', text: 'Prince Edward Island' },
+                { value: 'QC', text: 'Quebec' },
+                { value: 'SK', text: 'Saskatchewan' }
+            ],
+            USA: [
+                { value: 'AL', text: 'Alabama' },
+                { value: 'AK', text: 'Alaska' },
+                { value: 'AZ', text: 'Arizona' },
+                { value: 'AR', text: 'Arkansas' },
+                { value: 'CA', text: 'California' },
+                { value: 'CO', text: 'Colorado' },
+                { value: 'CT', text: 'Connecticut' },
+                { value: 'DE', text: 'Delaware' },
+                { value: 'FL', text: 'Florida' },
+                { value: 'GA', text: 'Georgia' },
+                { value: 'HI', text: 'Hawaii' },
+                { value: 'ID', text: 'Idaho' },
+                { value: 'IL', text: 'Illinois' },
+                { value: 'IN', text: 'Indiana' },
+                { value: 'IA', text: 'Iowa' },
+                { value: 'KS', text: 'Kansas' },
+                { value: 'KY', text: 'Kentucky' },
+                { value: 'LA', text: 'Louisiana' },
+                { value: 'ME', text: 'Maine' },
+                { value: 'MD', text: 'Maryland' },
+                { value: 'MA', text: 'Massachusetts' },
+                { value: 'MI', text: 'Michigan' },
+                { value: 'MN', text: 'Minnesota' },
+                { value: 'MS', text: 'Mississippi' },
+                { value: 'MO', text: 'Missouri' },
+                { value: 'MT', text: 'Montana' },
+                { value: 'NE', text: 'Nebraska' },
+                { value: 'NV', text: 'Nevada' },
+                { value: 'NH', text: 'New Hampshire' },
+                { value: 'NJ', text: 'New Jersey' },
+                { value: 'NM', text: 'New Mexico' },
+                { value: 'NY', text: 'New York' },
+                { value: 'NC', text: 'North Carolina' },
+                { value: 'ND', text: 'North Dakota' },
+                { value: 'OH', text: 'Ohio' },
+                { value: 'OK', text: 'Oklahoma' },
+                { value: 'OR', text: 'Oregon' },
+                { value: 'PA', text: 'Pennsylvania' },
+                { value: 'RI', text: 'Rhode Island' },
+                { value: 'SC', text: 'South Carolina' },
+                { value: 'SD', text: 'South Dakota' },
+                { value: 'TN', text: 'Tennessee' },
+                { value: 'TX', text: 'Texas' },
+                { value: 'UT', text: 'Utah' },
+                { value: 'VT', text: 'Vermont' },
+                { value: 'VA', text: 'Virginia' },
+                { value: 'WA', text: 'Washington' },
+                { value: 'WV', text: 'West Virginia' },
+                { value: 'WI', text: 'Wisconsin' },
+                { value: 'WY', text: 'Wyoming' }
+            ]
+        };
+
+        document.addEventListener('DOMContentLoaded', () => {
+            showProvince();
+        });
+
+        function showProvince() {
+            const countrySelect = document.getElementById('country');
+            const provinceSelect = document.getElementById('province');
+            const selectedCountry = countrySelect.value;
+            const options = provinces[selectedCountry] || [];
+
+            // Clear previous options
+            while (provinceSelect.firstChild) {
+                provinceSelect.removeChild(provinceSelect.firstChild);
+            }
+
+            // Add new options
+            options.forEach(option => {
+                const opt = document.createElement('option');
+                opt.value = option.value;
+                opt.textContent = option.text;
+                provinceSelect.appendChild(opt);
+            });
+        }
+
+        document.getElementById('registrationForm').addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            const form = event.target;
+            const formData = new FormData(form);
+            const data = {};
+            formData.forEach((value, key) => (data[key] = value));
+
+            try {
+                const response = await fetch('/submit', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    displaySuccess(result.data);
+                } else {
+                    displayErrors(result.errors);
+                }
+            } catch (error) {
+                console.error('Error submitting form:', error);
+            }
+        });
+
+        function displayErrors(errors) {
+        const errorBox = document.getElementById('errorBox');
+
+        //Clears any previous error messages
+        while (errorBox.firstChild) {
+            errorBox.removeChild(errorBox.firstChild);
+        }
+
+        //Adds new error messages
+        errors.forEach(error => {
+            const p = document.createElement('p');
+            p.textContent = error.msg;
+            errorBox.appendChild(p);
+        });
+        
+        errorBox.classList.remove('hidden');
+    }
+
+        function displaySuccess(data) {
+            const successBox = document.getElementById('successBox');
+            const submittedData = document.getElementById('submittedData');
+
+            // Clear previous submitted data
+            while (submittedData.firstChild) {
+                submittedData.removeChild(submittedData.firstChild);
+            }
+
+            // Clear the error messages
+            const errorBox = document.getElementById('errorBox');
+            while (errorBox.firstChild) {
+                errorBox.removeChild(errorBox.firstChild);
+            }
+            errorBox.classList.add('hidden');
+
+            // Add new submitted data
+            for (const [key, value] of Object.entries(data)) {
+                const p = document.createElement('p');
+                p.textContent = `${key.charAt(0).toUpperCase() + key.slice(1)}: ${value}`;
+                submittedData.appendChild(p);
+            }
+
+            document.getElementById('registrationForm').classList.add('hidden');
+            successBox.classList.remove('hidden');
+        }
+
+        function resetForm() {
+            document.getElementById('registrationForm').reset();
+            document.getElementById('registrationForm').classList.remove('hidden');
+            document.getElementById('successBox').classList.add('hidden');
+            document.getElementById('errorBox').classList.add('hidden');
+        }
+    </script>
+</body>
+</html>
